@@ -26,6 +26,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class MediaPlayerApp extends Application {
 
@@ -76,15 +77,10 @@ public class MediaPlayerApp extends Application {
         progressSlider.setStyle("-fx-control-inner-background: #1e2638; -fx-accent: #00e5ff;");
         HBox.setHgrow(progressSlider, Priority.ALWAYS);
 
-        progressSlider.setOnMouseReleased(e -> {
-            if (mediaPlayer != null) {
-                if (mediaPlayer.getTotalDuration() != null) {
-                    double total = mediaPlayer.getTotalDuration().toSeconds();
-                    double current = (progressSlider.getValue() / 100.0) * total;
-                    mediaPlayer.seek(javafx.util.Duration.seconds(current));
-                }
-            }
-        });
+        // Click on slider track to jump to position directly
+        progressSlider.setOnMousePressed(e -> seekToMousePosition(e.getX()));
+        // Drag slider knob/track to update position continuously
+        progressSlider.setOnMouseDragged(e -> seekToMousePosition(e.getX()));
 
         HBox progressBox = new HBox(10);
         progressBox.getChildren().addAll(timeLabel, progressSlider);
@@ -217,6 +213,34 @@ public class MediaPlayerApp extends Application {
         stage.setScene(scene);
         stage.show();
         root.requestFocus();
+    }
+
+    // Direct slider position calculator for clicks and drags
+    private void seekToMousePosition(double mouseX) {
+        if (mediaPlayer != null && mediaPlayer.getTotalDuration() != null) {
+            double sliderWidth = progressSlider.getWidth();
+            double percentage = mouseX / sliderWidth;
+
+            if (percentage < 0) percentage = 0;
+            if (percentage > 1) percentage = 1;
+
+            progressSlider.setValue(percentage * 100.0);
+            double targetSeconds = mediaPlayer.getTotalDuration().toSeconds() * percentage;
+            mediaPlayer.seek(Duration.seconds(targetSeconds));
+        }
+    }
+
+    // Skip forward or backward by specific seconds
+    private void seekRelative(double seconds) {
+        if (mediaPlayer != null && mediaPlayer.getTotalDuration() != null) {
+            double newTime = mediaPlayer.getCurrentTime().toSeconds() + seconds;
+            double maxTime = mediaPlayer.getTotalDuration().toSeconds();
+
+            if (newTime < 0) newTime = 0;
+            if (newTime > maxTime) newTime = maxTime;
+
+            mediaPlayer.seek(Duration.seconds(newTime));
+        }
     }
 
     // Key shortcut helper
@@ -357,6 +381,10 @@ public class MediaPlayerApp extends Application {
             volumeSlider.setValue(Math.min(1.0, volumeSlider.getValue() + 0.1));
         } else if (code == KeyCode.DOWN) {
             volumeSlider.setValue(Math.max(0.0, volumeSlider.getValue() - 0.1));
+        } else if (code == KeyCode.LEFT) {
+            seekRelative(-5.0); // Rewind 5s
+        } else if (code == KeyCode.RIGHT) {
+            seekRelative(5.0);  // Fast-forward 5s
         }
     }
 
