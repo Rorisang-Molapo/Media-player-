@@ -87,7 +87,7 @@ public class MediaPlayerApp extends Application {
         progressBox.setAlignment(Pos.CENTER);
 
         // Control Buttons
-        Button muteBtn = new Button("🔊");
+        Button muteBtn = new Button("vol");
         muteBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #8b9bb4; -fx-font-size: 14px;");
         muteBtn.setOnAction(e -> toggleMute());
 
@@ -100,19 +100,19 @@ public class MediaPlayerApp extends Application {
             }
         });
 
-        Button stopBtn = new Button("⏹");
+        Button stopBtn = new Button("stp");
         stopBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #8b9bb4; -fx-font-size: 14px;");
         stopBtn.setOnAction(e -> stopMedia());
 
-        Button prevBtn = new Button("⏮");
+        Button prevBtn = new Button("prev");
         prevBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #8b9bb4; -fx-font-size: 14px;");
         prevBtn.setOnAction(e -> playPrevious());
 
-        playPauseBtn = new Button("⏸");
+        playPauseBtn = new Button("P");
         playPauseBtn.setStyle("-fx-background-color: #00e5ff; -fx-text-fill: #090c10; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 10px; -fx-pref-width: 42px; -fx-pref-height: 42px;");
         playPauseBtn.setOnAction(e -> togglePlayPause());
 
-        Button nextBtn = new Button("⏭");
+        Button nextBtn = new Button("next");
         nextBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #8b9bb4; -fx-font-size: 14px;");
         nextBtn.setOnAction(e -> playNext());
 
@@ -294,10 +294,10 @@ public class MediaPlayerApp extends Application {
         if (mediaPlayer != null) {
             if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
                 mediaPlayer.pause();
-                playPauseBtn.setText("▶");
+                playPauseBtn.setText("next");
             } else {
                 mediaPlayer.play();
-                playPauseBtn.setText("⏸");
+                playPauseBtn.setText("P");
             }
         }
     }
@@ -305,7 +305,7 @@ public class MediaPlayerApp extends Application {
     private void stopMedia() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
-            playPauseBtn.setText("▶");
+            playPauseBtn.setText("next");
         }
     }
 
